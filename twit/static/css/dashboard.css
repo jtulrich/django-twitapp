@@ -1,0 +1,23 @@
+.bar rect {
+  fill: steelblue;
+  shape-rendering: crispEdges;
+}
+
+.bar text {
+  fill: #fff;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.container.content {
+    margin-top:100px;
+}
+
+.graph-histogram {
+    width:400px;
+    height:300px;
+}
