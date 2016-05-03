@@ -1,23 +1,50 @@
-.bar rect {
+h1 {
+    color: #FFC718;
+}
+
+.container.content {
+    margin-top:60px;
+}
+
+.container.content .row {
+    margin-top:40px;
+}
+
+.container.content .row:last-child {
+    margin-bottom:60px;
+}
+
+.container.content .row div.heading {
+    margin-bottom:20px;
+    text-decoration:underline;
+}
+
+/* Tweet Info */
+#most-retweeted-text {
+    font-size:18px;
+    font-style:italic;
+}
+#most-retweeted-author {
+    font-size:12px;
+}
+
+#graph-histogram, #graph-geographic {
+    width:100%;
+    height:400px;
+    border:1px dashed black;
+}
+
+#graph-histogram .bar rect {
   fill: steelblue;
   shape-rendering: crispEdges;
 }
 
-.bar text {
+#graph-histogram .bar text {
   fill: #fff;
 }
 
-.axis path, .axis line {
+#graph-histogram .axis path, .axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
-}
-
-.container.content {
-    margin-top:100px;
-}
-
-.graph-histogram {
-    width:400px;
-    height:300px;
 }
