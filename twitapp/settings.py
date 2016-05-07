@@ -12,20 +12,18 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+# Override settings with local or production settings
+try:
+    from .local_settings import *
+except ImportError as e:
+    pass
+try:
+    from .production_settings import *
+except ImportError as e:
+    pass
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'sc-!oawqsmjld$pn1rf@1$(6pr32(7n23-peqto9$sxqb64y=q'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -73,22 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'twitapp.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_twitapp',
-        'USER': 'twitapp',
-        'PASSWORD': 'twitapp_password',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
@@ -135,5 +117,3 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
-
-GOOGLE_API_KEY = 'AIzaSyAI0IlRVL55XL9ZpEJOWVlw-cUuBGXiMQE'

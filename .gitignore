@@ -51,7 +51,9 @@ coverage.xml
 
 # Django stuff:
 *.log
+inactive_settings/
 local_settings.py
+production_settings.py
 
 # Flask stuff:
 instance/
