@@ -3,8 +3,9 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 # from rest_framework.parsers import JSONParser
 from twit.models import Tweet
-from twit.serializers import TweetSerializer
+from twit.serializers import TweetSimpleSerializer, TweetGroupSerializer
 from django.shortcuts import render
+from .tasks import update_tweets
 
 
 class JSONResponse(HttpResponse):
@@ -18,23 +19,36 @@ class JSONResponse(HttpResponse):
 
 
 @csrf_exempt
-def tweet_list(request):
+def tweet_update(request):
     """
-    List all tweets, or create a new tweet.
+    Manually spawn the tweet update command.
+    """
+    flag = update_tweets()
+    return JSONResponse({'success': flag})
+
+
+@csrf_exempt
+def most_retweeted(request):
+    """
+    Get the most retweeted tweet in our data.
+    """
+    # TODO: Change SQL to return a single record rather than a table object.
+    if request.method == 'GET':
+        tweets = Tweet.objects.raw("SELECT * FROM GetMostRetweetedTweet()")
+        tweets_serial = TweetSimpleSerializer(tweets, many=True)
+        return JSONResponse(tweets_serial.data)
+
+
+@csrf_exempt
+def grouped_tweet_list(request):
+    """
+    Gets a list of all tweets grouped by hour with the most retweeted.
     """
     if request.method == 'GET':
-        tweets = Tweet.objects.all()
-        serializer = TweetSerializer(tweets, many=True)
-        return JSONResponse(serializer.data)
-
-    # elif request.method == 'POST':
-    #     data = JSONParser().parse(request)
-    #     serializer = TweetSerializer(data=data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return JSONResponse(serializer.data, status=201)
-    #     return JSONResponse(serializer.errors, status=400)
+        tweets = Tweet.objects.raw("SELECT * FROM GetTweetsGroupedByHourWithMostRetweeted()")
+        tweets_serial = TweetGroupSerializer(tweets, many=True)
+        return JSONResponse(tweets_serial.data)
 
 
-def test(request):
+def info(request):
     return render(request, 'twit/dashboard.html', {})

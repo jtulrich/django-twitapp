@@ -1,74 +1,39 @@
 $(document).ready(function() {
-    var test_data = {
-        "most_retweeted": {
-            "text": "Once #Onlywatch, now #Overwatch. #finally",
-            "author": "SahuginDagon"
-        },
-        "tweets_grouped": [
-            {"date": "2016-04-01T00:00:00", "count": 5,
-                "top_tweet": { "text": "Test 1", "coordinates": {"lat":-42,"lng":32}}},
-            {"date": "2016-04-01T01:00:00", "count": 1,
-                "top_tweet": { "text": "Test 2", "coordinates": {"lat":-42,"lng":22}}},
-            {"date": "2016-04-01T02:00:00", "count": 3,
-                "top_tweet": { "text": "Test 3", "coordinates": {"lat":-42,"lng":12}}},
-            {"date": "2016-04-01T03:00:00", "count": 10,
-                "top_tweet": { "text": "Test 4", "coordinates": {"lat":-42,"lng":2}}},
-            {"date": "2016-04-01T04:00:00", "count": 8,
-                "top_tweet": { "text": "Test 5", "coordinates": {"lat":-42,"lng":-12}}},
-            {"date": "2016-04-03T05:00:00", "count": 4,
-                "top_tweet": { "text": "Test 6", "coordinates": {"lat":-42,"lng":-22}}},
-            {"date": "2016-04-03T00:00:00", "count": 5,
-                "top_tweet": { "text": "Test 1", "coordinates": {"lat":-32,"lng":32}}},
-            {"date": "2016-04-03T01:00:00", "count": 1,
-                "top_tweet": { "text": "Test 2", "coordinates": {"lat":-32,"lng":22}}},
-            {"date": "2016-04-03T02:00:00", "count": 3,
-                "top_tweet": { "text": "Test 3", "coordinates": {"lat":-32,"lng":12}}},
-            {"date": "2016-04-03T03:00:00", "count": 10,
-                "top_tweet": { "text": "Test 4", "coordinates": {"lat":-32,"lng":2}}},
-            {"date": "2016-04-03T04:00:00", "count": 8,
-                "top_tweet": { "text": "Test 5", "coordinates": {"lat":-32,"lng":-12}}},
-            {"date": "2016-04-03T05:00:00", "count": 4,
-                "top_tweet": { "text": "Test 6", "coordinates": {"lat":-32,"lng":-22}}},
-            {"date": "2016-04-05T00:00:00", "count": 5,
-                "top_tweet": { "text": "Test 1", "coordinates": {"lat":-22,"lng":32}}},
-            {"date": "2016-04-05T01:00:00", "count": 1,
-                "top_tweet": { "text": "Test 2", "coordinates": {"lat":-22,"lng":22}}},
-            {"date": "2016-04-05T02:00:00", "count": 3,
-                "top_tweet": { "text": "Test 3", "coordinates": {"lat":-22,"lng":12}}},
-            {"date": "2016-04-05T03:00:00", "count": 10,
-                "top_tweet": { "text": "Test 4", "coordinates": {"lat":-22,"lng":2}}},
-            {"date": "2016-04-05T04:00:00", "count": 8,
-                "top_tweet": { "text": "Test 5", "coordinates": {"lat":-22,"lng":-12}}},
-            {"date": "2016-04-05T05:00:00", "count": 4,
-                "top_tweet": { "text": "Test 6", "coordinates": {"lat":-22,"lng":-22}}},
-            {"date": "2016-04-07T00:00:00", "count": 5,
-                "top_tweet": { "text": "Test 1", "coordinates": {"lat":-12,"lng":32}}},
-            {"date": "2016-04-07T01:00:00", "count": 1,
-                "top_tweet": { "text": "Test 2", "coordinates": {"lat":-12,"lng":22}}},
-            {"date": "2016-04-07T02:00:00", "count": 3,
-                "top_tweet": { "text": "Test 3", "coordinates": {"lat":-12,"lng":12}}},
-            {"date": "2016-04-07T03:00:00", "count": 10,
-                "top_tweet": { "text": "Test 4", "coordinates": {"lat":-12,"lng":2}}},
-            {"date": "2016-04-07T04:00:00", "count": 8,
-                "top_tweet": { "text": "Test 5", "coordinates": {"lat":-12,"lng":-12}}},
-            {"date": "2016-04-07T05:00:00", "count": 4,
-                "top_tweet": { "text": "Test 6", "coordinates": {"lat":-12,"lng":-22}}}
-        ]
-    };
 
-    //getTweetList();
-    updateMostRetweeted(test_data.most_retweeted);
-    updateHistogram(test_data.tweets_grouped);
-    updateMap(test_data.tweets_grouped);
+    // var test_data = {
+    //     "most_retweeted": {
+    //         "text": "Once #Onlywatch, now #Overwatch. #finally",
+    //         "author": "SahuginDagon"
+    //     },
+    //     "tweets_grouped": [
+    //         {"date": "2016-04-01T00:00:00", "count": 5,
+    //             "top_tweet": { "text": "Test 1", "coordinates": {"lat":-42,"lng":32}}}
+    //     ]
+    // };
+
+    getMostRetweeted();
+    getTweetList();
 });
+
+function getMostRetweeted() {
+    $.ajax({
+        url: "/data/most_retweeted/",
+        success: function(result) {
+            // TODO: Update SQL to return a single record as its data type.
+            updateMostRetweeted(result[0]);
+        },
+        error: function(error) {
+            alert('unable to retrieve data from backend.');
+        }
+    });
+}
 
 function getTweetList() {
     $.ajax({ 
-        url: "/twit/tweet/", 
+        url: "/data/",
         success: function(result) {
-            updateMostRetweeted(result.most_retweeted);
-            updateHistogram(result.tweets_grouped);
-            updateMap(result.tweets_grouped);
+            updateHistogram(result);
+            updateMap(result);
         },
         error: function(error) {
             alert('unable to retrieve data from backend.');
@@ -77,8 +42,8 @@ function getTweetList() {
 }
 
 function updateMostRetweeted(tweet) {
-    $("#most-retweeted-text").html("\"" + tweet.text + "\"");
-    $("#most-retweeted-author").html("&mdash;  @" + tweet.author)
+    $("#most-retweeted-text").html("\"" + tweet.tweet_text + "\"");
+    $("#most-retweeted-author").html("&mdash;  @" + tweet.user_screen_name)
 }
 
 function updateHistogram(data) {
@@ -92,11 +57,11 @@ function updateHistogram(data) {
             height = target_object.height();
 
         var x = d3.time.scale()
-            .domain([new Date(data[0].date), d3.time.day.offset(new Date(data[data.length - 1].date), 1)])
+            .domain([new Date(data[0].tweet_hour), d3.time.day.offset(new Date(data[data.length - 1].tweet_hour), 1)])
             .rangeRound([0, width - margin.left - margin.right]);
 
         var y = d3.scale.linear()
-            .domain([0, d3.max(data, function(d) { return d.count; })])
+            .domain([0, d3.max(data, function(d) { return d.tweet_hour_count; })])
             .range([height - margin.top - margin.bottom, 0]);
 
         var xAxis = d3.svg.axis()
@@ -123,11 +88,11 @@ function updateHistogram(data) {
             .data(data)
           .enter().append('rect')
             .attr('class', 'bar')
-            .attr('x', function(d) { return x(new Date(d.date)); })
+            .attr('x', function(d) { return x(new Date(d.tweet_hour)); })
             .attr('y', function(d) { return height - margin.top - margin.bottom -
-                (height - margin.top - margin.bottom - y(d.count)) })
+                (height - margin.top - margin.bottom - y(d.tweet_hour_count)) })
             .attr('width', 10)
-            .attr('height', function(d) { return height - margin.top - margin.bottom - y(d.count) });
+            .attr('height', function(d) { return height - margin.top - margin.bottom - y(d.tweet_hour_count) });
 
         svg.append('g')
             .attr('class', 'x axis')
@@ -161,9 +126,12 @@ function updateMap(data) {
         var marker_list = [];
         for (var i = 0; i < data.length; i++) {
             var marker = new google.maps.Marker({
-                position: data[i].top_tweet.coordinates,
+                position: {
+                    lat: data[i].tweet_latitude,
+                    lng: data[i].tweet_longitude
+                },
                 map: map,
-                title: data[i].top_tweet.text
+                title: data[i].tweet_text
             });
             marker_list.push(marker);
         }

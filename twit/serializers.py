@@ -12,6 +12,9 @@ class TweetSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(required=True)
     import_time = serializers.DateTimeField(required=False)
 
+    class Meta:
+        ordering = ('created_at',)
+
     def create(self, validated_data):
         """
         Create and return a new `Tweet` instance, given the validated data.
@@ -28,4 +31,53 @@ class TweetSerializer(serializers.Serializer):
         instance.user_lang = validated_data.get('user_lang', instance.user_lang)
         instance.created_at = validated_data.get('created_at', instance.created_at)
         instance.save()
+        return instance
+
+
+class TweetSimpleSerializer(serializers.Serializer):
+    tweet_text = serializers.CharField(required=True, allow_blank=True, max_length=140)
+    tweet_latitude = serializers.FloatField(required=False)
+    tweet_longitude = serializers.FloatField(required=False)
+    tweet_date = serializers.DateTimeField(required=True)
+    user_screen_name = serializers.CharField(required=True)
+
+    class Meta:
+        ordering = ('tweet_date',)
+
+    def create(self, validated_data):
+        """
+        Create and return a new `TweetSimple` instance, given the validated data.
+        """
+        return validated_data
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `TweetSimple` instance, given the validated data. TODO: FAKE BETTER.
+        """
+        return instance
+
+
+
+class TweetGroupSerializer(serializers.Serializer):
+    tweet_hour = serializers.DateTimeField(required=True)
+    tweet_hour_count = serializers.IntegerField(required=True)
+    tweet_user = serializers.CharField(required=True)
+    tweet_text = serializers.CharField(required=True, allow_blank=True, max_length=140)
+    tweet_latitude = serializers.FloatField(required=False)
+    tweet_longitude = serializers.FloatField(required=False)
+    tweet_retweets = serializers.IntegerField(required=True)
+
+    class Meta:
+        ordering = ('tweet_hour',)
+
+    def create(self, validated_data):
+        """
+        Create and return a new `TweetGroup` instance, given the validated data.
+        """
+        return validated_data
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `TweetGroup` instance, given the validated data. TODO: FAKE BETTER.
+        """
         return instance
