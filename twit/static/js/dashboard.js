@@ -1,16 +1,4 @@
 $(document).ready(function() {
-
-    // var test_data = {
-    //     "most_retweeted": {
-    //         "text": "Once #Onlywatch, now #Overwatch. #finally",
-    //         "author": "SahuginDagon"
-    //     },
-    //     "tweets_grouped": [
-    //         {"date": "2016-04-01T00:00:00", "count": 5,
-    //             "top_tweet": { "text": "Test 1", "coordinates": {"lat":-42,"lng":32}}}
-    //     ]
-    // };
-
     getMostRetweeted();
     getTweetList();
 });
@@ -19,7 +7,6 @@ function getMostRetweeted() {
     $.ajax({
         url: "/data/most_retweeted/",
         success: function(result) {
-            // TODO: Update SQL to return a single record as its data type.
             updateMostRetweeted(result[0]);
         },
         error: function(error) {
@@ -114,30 +101,53 @@ function updateHistogram(data) {
     }
 }
 
+var map = null;
 function updateMap(data) {
     try
     {
-        var map = new google.maps.Map(document.getElementById("graph-geographic"), {
+        map = new google.maps.Map(document.getElementById("graph-geographic"), {
             center: {lat: 0, lng: 0},
             scrollwheel: false,
-            zoom: 1
+            zoom: 2
         });
 
         var marker_list = [];
         for (var i = 0; i < data.length; i++) {
-            var marker = new google.maps.Marker({
-                position: {
-                    lat: data[i].tweet_latitude,
-                    lng: data[i].tweet_longitude
-                },
-                map: map,
-                title: data[i].tweet_text
-            });
-            marker_list.push(marker);
+            var text = '<i>' + data[i].tweet_text + '</i>';
+            var text_score = data[i].tweet_score + ' ' + data[i].tweet_score_type;
+            var text_hour = data[i].tweet_hour;
+            var text_user = '@' + data[i].tweet_user;
+
+            var markerLatlng = new google.maps.LatLng(data[i].tweet_latitude, data[i].tweet_longitude);
+            var title = text_user + ' - ' + text_score + ' - ' + text_hour;
+            var iwContent = '<span style="font-weight: bold;text-decoration: underline;">Tweet</span><br />' +
+                            text + '<br />' +
+                            text_user + '<br />' +
+                            text_score;
+            var tmarker = createMarker(markerLatlng ,title,iwContent);
+            marker_list.push(tmarker);
         }
     }
     catch (ex)
     {
         console.log('MAP ' + ex);
     }
+}
+
+var infowindow = new google.maps.InfoWindow();
+function createMarker(latlon, title, iwContent) {
+    var marker = new google.maps.Marker({
+        clickable: true,
+        position: latlon,
+        title: title,
+        map: map
+    });
+
+    google.maps.event.addListener(marker, 'click', function () {
+        infowindow.setContent(iwContent);
+        infowindow.setOptions({maxWidth: 300});
+        infowindow.open(map, marker);
+    });
+
+    return marker;
 }

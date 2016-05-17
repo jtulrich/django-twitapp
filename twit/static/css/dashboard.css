@@ -23,6 +23,8 @@ h1 {
 #most-retweeted-text {
     font-size:18px;
     font-style:italic;
+    width:700px;
+    margin:0 auto;
 }
 #most-retweeted-author {
     font-size:12px;

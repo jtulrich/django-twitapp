@@ -35,7 +35,7 @@ class TweetSerializer(serializers.Serializer):
 
 
 class TweetSimpleSerializer(serializers.Serializer):
-    tweet_text = serializers.CharField(required=True, allow_blank=True, max_length=140)
+    tweet_text = serializers.CharField(required=True, allow_blank=True)
     tweet_latitude = serializers.FloatField(required=False)
     tweet_longitude = serializers.FloatField(required=False)
     tweet_date = serializers.DateTimeField(required=True)
@@ -62,10 +62,11 @@ class TweetGroupSerializer(serializers.Serializer):
     tweet_hour = serializers.DateTimeField(required=True)
     tweet_hour_count = serializers.IntegerField(required=True)
     tweet_user = serializers.CharField(required=True)
-    tweet_text = serializers.CharField(required=True, allow_blank=True, max_length=140)
+    tweet_text = serializers.CharField(required=True, allow_blank=True)
     tweet_latitude = serializers.FloatField(required=False)
     tweet_longitude = serializers.FloatField(required=False)
-    tweet_retweets = serializers.IntegerField(required=True)
+    tweet_score_type = serializers.CharField(required=True)
+    tweet_score = serializers.IntegerField(required=True)
 
     class Meta:
         ordering = ('tweet_hour',)

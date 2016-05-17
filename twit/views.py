@@ -32,7 +32,6 @@ def most_retweeted(request):
     """
     Get the most retweeted tweet in our data.
     """
-    # TODO: Change SQL to return a single record rather than a table object.
     if request.method == 'GET':
         tweets = Tweet.objects.raw("SELECT * FROM GetMostRetweetedTweet()")
         tweets_serial = TweetSimpleSerializer(tweets, many=True)
@@ -45,7 +44,7 @@ def grouped_tweet_list(request):
     Gets a list of all tweets grouped by hour with the most retweeted.
     """
     if request.method == 'GET':
-        tweets = Tweet.objects.raw("SELECT * FROM GetTweetsGroupedByHourWithMostRetweeted()")
+        tweets = Tweet.objects.raw("SELECT * FROM GetTweetsGroupedByHourWithHighestValues()")
         tweets_serial = TweetGroupSerializer(tweets, many=True)
         return JSONResponse(tweets_serial.data)
 
