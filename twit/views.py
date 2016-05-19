@@ -19,27 +19,18 @@ class JSONResponse(HttpResponse):
 
 
 @csrf_exempt
-def tweet_update(request):
+def rest_daily_most_retweeted(request):
     """
-    Manually spawn the tweet update command.
-    """
-    flag = update_tweets()
-    return JSONResponse({'success': flag})
-
-
-@csrf_exempt
-def most_retweeted(request):
-    """
-    Get the most retweeted tweet in our data.
+    Get the most retweeted tweet for each day of data.
     """
     if request.method == 'GET':
-        tweets = Tweet.objects.raw("SELECT * FROM GetMostRetweetedTweet()")
+        tweets = Tweet.objects.raw("SELECT * FROM GetMostRetweetedTweetByDay()")
         tweets_serial = TweetSimpleSerializer(tweets, many=True)
         return JSONResponse(tweets_serial.data)
 
 
 @csrf_exempt
-def grouped_tweet_list(request):
+def rest_hourly_tweet_list(request):
     """
     Gets a list of all tweets grouped by hour with the most retweeted.
     """

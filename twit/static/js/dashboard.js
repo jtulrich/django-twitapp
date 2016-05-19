@@ -5,9 +5,9 @@ $(document).ready(function() {
 
 function getMostRetweeted() {
     $.ajax({
-        url: "/data/most_retweeted/",
+        url: "/data/day/retweeted/",
         success: function(result) {
-            updateMostRetweeted(result[0]);
+            updateMostRetweeted(result);
         },
         error: function(error) {
             alert('unable to retrieve data from backend.');
@@ -17,7 +17,7 @@ function getMostRetweeted() {
 
 function getTweetList() {
     $.ajax({ 
-        url: "/data/",
+        url: "/data/hour/",
         success: function(result) {
             updateHistogram(result);
             updateMap(result);
@@ -28,9 +28,19 @@ function getTweetList() {
     });
 }
 
-function updateMostRetweeted(tweet) {
-    $("#most-retweeted-text").html("\"" + tweet.tweet_text + "\"");
-    $("#most-retweeted-author").html("&mdash;  @" + tweet.user_screen_name)
+function updateMostRetweeted(tweets) {
+    var html_content = '';
+    for (var i = 0; i < tweets.length; i++) {
+        html_content += createTweetMediaObject(tweets[i]);
+    }
+    $("#most-retweeted").html(html_content);
+}
+
+function createTweetMediaObject(tweet) {
+    var heading_content = tweet.tweet_date + ' - ' + tweet.tweet_retweets + ' Retweets from @' + tweet.user_screen_name;
+    var text_content = tweet.tweet_text;
+    var inner_content = '<h4 class="media-heading">' + heading_content + '</h4>' + text_content;
+    return '<div class="media"><div class="media-body">' + inner_content + '</div></div>';
 }
 
 function updateHistogram(data) {

@@ -3,63 +3,47 @@
 --   in the Twitapp project.
 --
 
-CREATE OR REPLACE FUNCTION GetMostRetweetedTweet()
+CREATE OR REPLACE FUNCTION GetMostRetweetedTweetByDay()
   RETURNS TABLE (
 		id text,
 		tweet_text text,
 		tweet_latitude double precision,
 		tweet_longitude double precision,
 		tweet_date timestamp with time zone,
+    tweet_retweets integer,
 		user_screen_name text)
 	AS $$
 	SELECT tweet_id,
           "text",
           user_location_latitude,
           user_location_longitude,
-          created_at,
+          date_trunc('day', created_at),
+          retweet_count,
           user_screen_name
-	  FROM twit_tweet
-	 WHERE retweet_original = TRUE
-	 ORDER BY retweet_count desc
-	 LIMIT 1
- $$ LANGUAGE SQL;
-
-
-CREATE OR REPLACE FUNCTION GetMostRetweetedTweetForDayHour(target_date timestamp with time zone)
-  RETURNS TABLE (
-		id text,
-		tweet_text text,
-		tweet_latitude double precision,
-		tweet_longitude double precision,
-		tweet_hour timestamp with time zone,
-		user_screen_name text)
-	AS $$
-	SELECT tweet_id,
-          "text",
-          user_location_latitude,
-          user_location_longitude,
-          target_date,
-          user_screen_name
-	  FROM twit_tweet
-	 WHERE date_trunc('hour', created_at) = target_date
-	   AND retweet_original = TRUE
-	 ORDER BY retweet_count desc
-	 LIMIT 1
- $$ LANGUAGE SQL;
-
-
-CREATE OR REPLACE FUNCTION GetTweetsGroupedByHour()
-  RETURNS TABLE (
-		id timestamp with time zone,
-		tweet_hour timestamp with time zone,
-		tweet_hour_count bigint)
-	AS $$
-	SELECT date_trunc('hour', created_at),
-          date_trunc('hour', created_at),
-          count(*)
-	  FROM twit_tweet
-	 GROUP BY date_trunc('hour', created_at)
-	 ORDER BY date_trunc('hour', created_at) asc
+	  FROM twit_tweet,
+          (
+            SELECT t.id as tid,
+              max_retweets.tday as tday
+              FROM twit_tweet as t,
+                    (
+                    SELECT date_trunc('day', created_at) as tday, MAX(retweet_count) as tre
+                      FROM twit_tweet
+                     WHERE retweet_original = TRUE
+                     GROUP BY date_trunc('day', created_at)
+                    ) as max_retweets
+             WHERE max_retweets.tday = date_trunc('day', t.created_at)
+               AND max_retweets.tre = t.retweet_count
+               AND t.retweet_original = TRUE
+               AND t.id = (SELECT id
+                             FROM twit_tweet
+                            WHERE retweet_original = TRUE
+                              AND max_retweets.tday = date_trunc('day', created_at)
+                              AND max_retweets.tre = retweet_count
+                            ORDER BY created_at DESC
+                            LIMIT 1)
+          ) as retweet_group
+	 WHERE twit_tweet.id = retweet_group.tid
+	 ORDER BY date_trunc('day', created_at) asc
  $$ LANGUAGE SQL;
 
 

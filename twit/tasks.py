@@ -37,7 +37,7 @@ def update_tweets():
         # Get new tweets
         for tweet in tweepy.Cursor(api.search, q="#"+settings.TWITTER_HASHTAG).items():
             try:
-                if Tweet.objects.filter(tweet_id=tweet.id_str).count() == 0:
+                if Tweet.objects.filter(tweet_id=tweet.id_str).exists():
                     # Create a new Tweet
                     new_tweet = Tweet()
                     new_tweet.tweet_id = tweet.id_str

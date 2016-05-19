@@ -39,6 +39,7 @@ class TweetSimpleSerializer(serializers.Serializer):
     tweet_latitude = serializers.FloatField(required=False)
     tweet_longitude = serializers.FloatField(required=False)
     tweet_date = serializers.DateTimeField(required=True)
+    tweet_retweets = serializers.IntegerField(required=True)
     user_screen_name = serializers.CharField(required=True)
 
     class Meta:
